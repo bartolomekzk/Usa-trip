@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🇺🇸 USA Road Trip 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #ff4d00;
+    --accent2: #ffb800;
+    --green: #00d68f;
+    --red: #ff3b30;
+    --yellow: #ffcc00;
+    --text: #f0f0f0;
+    --muted: #666680;
+    --personal-budget: 3553;
+    --transport-budget: 469;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0a00 50%, #0a0a0f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .flag { font-size: 28px; }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  h1 span { color: var(--text); }
+
+  .dates {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Dashboard cards */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .dash-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .dash-card.personal::before { background: var(--accent); }
+  .dash-card.transport::before { background: var(--accent2); }
+  .dash-card.total::before { background: var(--green); }
+  .dash-card.daily::before { background: #a78bfa; }
+
+  .dash-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .dash-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .dash-card.personal .dash-value { color: var(--accent); }
+  .dash-card.transport .dash-value { color: var(--accent2); }
+  .dash-card.total .dash-value { color: var(--green); }
+  .dash-card.daily .dash-value { color: #a78bfa; }
+
+  .dash-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .personal .progress-fill { background: var(--accent); }
+  .transport .progress-fill { background: var(--accent2); }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  .status-ok { background: rgba(0,214,143,0.15); color: var(--green); }
+  .status-warn { background: rgba(255,204,0,0.15); color: var(--yellow); }
+  .status-danger { background: rgba(255,59,48,0.15); color: var(--red); }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin: 0 16px 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 4px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tab.active {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* Form */
+  .form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin: 0 16px 16px;
+    padding: 20px;
+  }
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .form-full { grid-column: 1 / -1; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--surface); }
+
+  .btn-add {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-add:active { opacity: 0.8; }
+  .btn-add.transport-btn { background: var(--accent2); color: #000; }
+
+  /* Entries list */
+  .entries-section {
+    margin: 0 16px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .entry-count {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .entry-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .entry-emoji {
+    font-size: 24px;
+    width: 44px;
+    height: 44px;
+    background: var(--surface);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .entry-info { flex: 1; min-width: 0; }
+
+  .entry-desc {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .entry-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .entry-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .entry-amount.transport { color: var(--accent2); }
+
+  .entry-delete {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Charts */
+  .charts-section {
+    margin: 0 16px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .chart-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* Daily bars */
+  .day-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .day-bar-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 50px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-label { font-size: 11px; color: var(--muted); }
+
+  .bar-track {
+    height: 20px;
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    position: relative;
+  }
+
+  .bar-limit {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .bar-amount { font-size: 12px; font-weight: 600; text-align: right; }
+
+  /* Category pie */
+  .cat-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .cat-row {
+    display: grid;
+    grid-template-columns: 24px 1fr auto 50px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cat-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+
+  .cat-name { font-size: 13px; }
+  .cat-pct { font-size: 11px; color: var(--muted); }
+  .cat-amt { font-size: 13px; font-weight: 600; text-align: right; }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 8px; }
+  .empty-text { font-size: 13px; }
+
+  /* City breakdown */
+  .city-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .city-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--surface);
+    border-radius: 10px;
+  }
+
+  .city-name { font-size: 13px; }
+  .city-amt { font-size: 14px; font-weight: 600; color: var(--accent); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="flag">🇺🇸</div>
+    <div>
+      <h1>USA ROAD <span>TRIP</span></h1>
+      <div class="dates">27 MAJ – 17 CZERWIEC 2026 · 6 OSÓB · 22 DNI</div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <div class="dash-card personal">
+      <div class="dash-label">💳 Osobiste pozostało</div>
+      <div class="dash-value" id="personalLeft">$3,553</div>
+      <div class="dash-sub" id="personalSpent">Wydano: $0 z $3,553</div>
+      <div class="progress-bar"><div class="progress-fill personal" id="personalBar" style="width:0%"></div></div>
+      <div class="status-badge status-ok" id="personalStatus">✅ OK</div>
+    </div>
+    <div class="dash-card transport">
+      <div class="dash-label">🚗 Transport pozostało</div>
+      <div class="dash-value" id="transportLeft">$469</div>
+      <div class="dash-sub" id="transportSpent">Wydano: $0 z $469</div>
+      <div class="progress-bar"><div class="progress-fill transport" id="transportBar" style="width:0%"></div></div>
+      <div class="status-badge status-ok" id="transportStatus">✅ OK</div>
+    </div>
+    <div class="dash-card total">
+      <div class="dash-label">💰 Łącznie wydano</div>
+      <div class="dash-value" id="totalSpent">$0</div>
+      <div class="dash-sub">Budżet całkowity: $4,022</div>
+    </div>
+    <div class="dash-card daily">
+      <div class="dash-label">📅 Limit dzienny</div>
+      <div class="dash-value">$155</div>
+      <div class="dash-sub" id="todaySpent">Dziś: $0</div>
+    </div>
+  </div>
+</header>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('add-personal')">➕ Osobiste</button>
+  <button class="tab" onclick="switchTab('add-transport')">⛽ Transport</button>
+  <button class="tab" onclick="switchTab('entries')">📋 Lista</button>
+  <button class="tab" onclick="switchTab('charts')">📊 Wykresy</button>
+</div>
+
+<!-- ADD PERSONAL -->
+<div id="add-personal">
+  <div class="form-section">
+    <div class="form-title">🍔 Dodaj wydatek osobisty</div>
+    <div class="form-grid">
+      <div>
+        <label>Data</label>
+        <input type="date" id="p-date">
+      </div>
+      <div>
+        <label>Kwota (USD)</label>
+        <input type="number" id="p-amount" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div>
+        <label>Miasto</label>
+        <select id="p-city">
+          <option value="Nowy Jork">🗽 Nowy Jork</option>
+          <option value="Waszyngton">🏛️ Waszyngton</option>
+          <option value="Niagara Falls">💧 Niagara Falls</option>
+          <option value="Detroit">🏙️ Detroit</option>
+          <option value="Chicago">🌆 Chicago</option>
+          <option value="Trasa">🛣️ Trasa</option>
+          <option value="Salt Lake City">⛰️ Salt Lake City</option>
+          <option value="Zion NP">🏜️ Zion NP</option>
+          <option value="Las Vegas">🎰 Las Vegas</option>
+          <option value="Los Angeles">🌴 Los Angeles</option>
+          <option value="Houston">🚀 Houston</option>
+          <option value="Nowy Orlean">🎷 Nowy Orlean</option>
+          <option value="Pensacola Beach">🏖️ Pensacola Beach</option>
+          <option value="Nashville">🎸 Nashville</option>
+        </select>
+      </div>
+      <div>
+        <label>Kategoria</label>
+        <select id="p-category">
+          <option value="🍔 Jedzenie">🍔 Jedzenie</option>
+          <option value="🎡 Atrakcje">🎡 Atrakcje</option>
+          <option value="🛍️ Zakupy">🛍️ Zakupy</option>
+          <option value="🎰 Rozrywka">🎰 Rozrywka</option>
+          <option value="📱 Internet">📱 Internet</option>
+          <option value="📦 Inne">📦 Inne</option>
+        </select>
+      </div>
+      <div class="form-full">
+        <label>Opis</label>
+        <input type="text" id="p-desc" placeholder="np. obiad Chipotle">
+      </div>
+    </div>
+    <button class="btn-add" onclick="addEntry('personal')">+ DODAJ WYDATEK</button>
+  </div>
+</div>
+
+<!-- ADD TRANSPORT -->
+<div id="add-transport" class="hidden">
+  <div class="form-section">
+    <div class="form-title">🚗 Dodaj koszt transportu</div>
+    <div class="form-grid">
+      <div>
+        <label>Data</label>
+        <input type="date" id="t-date">
+      </div>
+      <div>
+        <label>Mój udział (USD)</label>
+        <input type="number" id="t-amount" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div>
+        <label>Typ</label>
+        <select id="t-type">
+          <option value="⛽ Paliwo">⛽ Paliwo</option>
+          <option value="🛣️ Toll">🛣️ Toll/Autostrada</option>
+          <option value="🅿️ Parking">🅿️ Parking</option>
+          <option value="🔧 Inne">🔧 Inne</option>
+        </select>
+      </div>
+      <div>
+        <label>Odcinek</label>
+        <input type="text" id="t-route" placeholder="np. NY → Waszyngton">
+      </div>
+      <div class="form-full">
+        <label>Opis</label>
+        <input type="text" id="t-desc" placeholder="np. Shell przed Chicago, kwota łączna ÷6">
+      </div>
+    </div>
+    <button class="btn-add transport-btn" onclick="addEntry('transport')">+ DODAJ TRANSPORT</button>
+  </div>
+</div>
+
+<!-- ENTRIES -->
+<div id="entries" class="hidden">
+  <div class="entries-section">
+    <div class="section-header">
+      <div class="section-title">Wszystkie wydatki</div>
+      <div class="entry-count" id="entryCount">0 wpisów</div>
+    </div>
+    <div id="entriesList">
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">Brak wpisów – dodaj pierwszy wydatek!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div id="charts" class="hidden">
+  <div class="charts-section">
+
+    <!-- Daily spending -->
+    <div class="chart-card">
+      <div class="chart-title">📊 Wydatki dziennie (osobiste)</div>
+      <div class="day-bars" id="dayBars">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <div class="empty-text">Dodaj wydatki aby zobaczyć wykres</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="chart-card">
+      <div class="chart-title">🥧 Podział według kategorii</div>
+      <div class="cat-list" id="catList">
+        <div class="empty-state">
+          <div class="empty-icon">🥧</div>
+          <div class="empty-text">Brak danych</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- By city -->
+    <div class="chart-card">
+      <div class="chart-title">🗺️ Wydatki według miasta</div>
+      <div class="city-list" id="cityList">
+        <div class="empty-state">
+          <div class="empty-icon">🗺️</div>
+          <div class="empty-text">Brak danych</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transport breakdown -->
+    <div class="chart-card">
+      <div class="chart-title">🚗 Transport – podział</div>
+      <div class="cat-list" id="transportList">
+        <div class="empty-state">
+          <div class="empty-icon">⛽</div>
+          <div class="empty-text">Brak danych transportowych</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PERSONAL_BUDGET = 3553;
+  const TRANSPORT_BUDGET = 469;
+  const DAILY_LIMIT = 155;
+
+  const CAT_COLORS = {
+    '🍔 Jedzenie': '#ff4d00',
+    '🎡 Atrakcje': '#00d68f',
+    '🛍️ Zakupy': '#a78bfa',
+    '🎰 Rozrywka': '#ffb800',
+    '📱 Internet': '#38bdf8',
+    '📦 Inne': '#666680',
+  };
+
+  const TRANSPORT_COLORS = {
+    '⛽ Paliwo': '#ffb800',
+    '🛣️ Toll': '#ff4d00',
+    '🅿️ Parking': '#a78bfa',
+    '🔧 Inne': '#666680',
+  };
+
+  let entries = JSON.parse(localStorage.getItem('usaTrip2026') || '[]');
+
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('p-date').value = today;
+  document.getElementById('t-date').value = today;
+
+  function save() {
+    localStorage.setItem('usaTrip2026', JSON.stringify(entries));
+  }
+
+  function switchTab(tab) {
+    ['add-personal','add-transport','entries','charts'].forEach(t => {
+      document.getElementById(t).classList.add('hidden');
+    });
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.getElementById(tab).classList.remove('hidden');
+    event.target.classList.add('active');
+    if (tab === 'charts') renderCharts();
+    if (tab === 'entries') renderEntries();
+  }
+
+  function addEntry(type) {
+    if (type === 'personal') {
+      const amount = parseFloat(document.getElementById('p-amount').value);
+      const date = document.getElementById('p-date').value;
+      const city = document.getElementById('p-city').value;
+      const category = document.getElementById('p-category').value;
+      const desc = document.getElementById('p-desc').value || category;
+
+      if (!amount || !date) { alert('Podaj datę i kwotę!'); return; }
+
+      entries.push({ id: Date.now(), type: 'personal', amount, date, city, category, desc });
+      document.getElementById('p-amount').value = '';
+      document.getElementById('p-desc').value = '';
+    } else {
+      const amount = parseFloat(document.getElementById('t-amount').value);
+      const date = document.getElementById('t-date').value;
+      const category = document.getElementById('t-type').value;
+      const route = document.getElementById('t-route').value;
+      const desc = document.getElementById('t-desc').value || route || category;
+
+      if (!amount || !date) { alert('Podaj datę i kwotę!'); return; }
+
+      entries.push({ id: Date.now(), type: 'transport', amount, date, category, desc, route });
+      document.getElementById('t-amount').value = '';
+      document.getElementById('t-route').value = '';
+      document.getElementById('t-desc').value = '';
+    }
+
+    save();
+    updateDashboard();
+
+    // Show brief confirmation
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ DODANO!';
+    setTimeout(() => btn.textContent = orig, 1200);
+  }
+
+  function deleteEntry(id) {
+    entries = entries.filter(e => e.id !== id);
+    save();
+    updateDashboard();
+    renderEntries();
+  }
+
+  function updateDashboard() {
+    const personalEntries = entries.filter(e => e.type === 'personal');
+    const transportEntries = entries.filter(e => e.type === 'transport');
+
+    const personalSpent = personalEntries.reduce((s, e) => s + e.amount, 0);
+    const transportSpent = transportEntries.reduce((s, e) => s + e.amount, 0);
+    const totalSpent = personalSpent + transportSpent;
+
+    const personalLeft = PERSONAL_BUDGET - personalSpent;
+    const transportLeft = TRANSPORT_BUDGET - transportSpent;
+
+    // Personal
+    document.getElementById('personalLeft').textContent = '$' + personalLeft.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('personalSpent').textContent = `Wydano: $${personalSpent.toFixed(0)} z $${PERSONAL_BUDGET.toLocaleString()}`;
+    const pPct = Math.min((personalSpent / PERSONAL_BUDGET) * 100, 100);
+    document.getElementById('personalBar').style.width = pPct + '%';
+
+    const pStatus = document.getElementById('personalStatus');
+    if (personalLeft < 0) { pStatus.className = 'status-badge status-danger'; pStatus.textContent = '🚨 Przekroczono!'; }
+    else if (personalLeft < 500) { pStatus.className = 'status-badge status-warn'; pStatus.textContent = '⚠️ Mało zostało'; }
+    else { pStatus.className = 'status-badge status-ok'; pStatus.textContent = '✅ OK'; }
+
+    // Transport
+    document.getElementById('transportLeft').textContent = '$' + transportLeft.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('transportSpent').textContent = `Wydano: $${transportSpent.toFixed(0)} z $${TRANSPORT_BUDGET}`;
+    const tPct = Math.min((transportSpent / TRANSPORT_BUDGET) * 100, 100);
+    document.getElementById('transportBar').style.width = tPct + '%';
+
+    const tStatus = document.getElementById('transportStatus');
+    if (transportLeft < 0) { tStatus.className = 'status-badge status-danger'; tStatus.textContent = '🚨 Przekroczono!'; }
+    else if (transportLeft < 100) { tStatus.className = 'status-badge status-warn'; tStatus.textContent = '⚠️ Mało zostało'; }
+    else { tStatus.className = 'status-badge status-ok'; tStatus.textContent = '✅ OK'; }
+
+    // Total
+    document.getElementById('totalSpent').textContent = '$' + totalSpent.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    // Today
+    const todayStr = today;
+    const todaySpent = personalEntries.filter(e => e.date === todayStr).reduce((s, e) => s + e.amount, 0);
+    document.getElementById('todaySpent').textContent = `Dziś: $${todaySpent.toFixed(0)} / $${DAILY_LIMIT}`;
+  }
+
+  function renderEntries() {
+    const list = document.getElementById('entriesList');
+    document.getElementById('entryCount').textContent = entries.length + ' wpisów';
+
+    if (entries.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">Brak wpisów – dodaj pierwszy wydatek!</div></div>';
+      return;
+    }
+
+    const sorted = [...entries].sort((a,b) => new Date(b.date) - new Date(a.date));
+    list.innerHTML = sorted.map(e => {
+      const emoji = e.type === 'transport' ? (e.category.split(' ')[0] || '🚗') : e.category.split(' ')[0];
+      const dateStr = new Date(e.date).toLocaleDateString('pl-PL', { day:'numeric', month:'short' });
+      return `
+        <div class="entry-card">
+          <div class="entry-emoji">${emoji}</div>
+          <div class="entry-info">
+            <div class="entry-desc">${e.desc}</div>
+            <div class="entry-meta">${dateStr} · ${e.city || e.route || ''} · ${e.category}</div>
+          </div>
+          <div class="entry-amount ${e.type === 'transport' ? 'transport' : ''}">$${e.amount.toFixed(0)}</div>
+          <button class="entry-delete" onclick="deleteEntry(${e.id})">✕</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderCharts() {
+    const personalEntries = entries.filter(e => e.type === 'personal');
+    const transportEntries = entries.filter(e => e.type === 'transport');
+
+    // Daily bars
+    const dayMap = {};
+    personalEntries.forEach(e => {
+      dayMap[e.date] = (dayMap[e.date] || 0) + e.amount;
+    });
+    const dayBars = document.getElementById('dayBars');
+    if (Object.keys(dayMap).length === 0) {
+      dayBars.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">Dodaj wydatki aby zobaczyć wykres</div></div>';
+    } else {
+      const maxVal = Math.max(...Object.values(dayMap), DAILY_LIMIT);
+      dayBars.innerHTML = Object.entries(dayMap).sort().map(([date, amt]) => {
+        const pct = (amt / maxVal) * 100;
+        const limitPct = (DAILY_LIMIT / maxVal) * 100;
+        const color = amt > DAILY_LIMIT ? 'var(--red)' : 'var(--accent)';
+        const dateStr = new Date(date).toLocaleDateString('pl-PL', { day:'numeric', month:'short' });
+        return `
+          <div class="day-bar-row">
+            <div class="day-label">${dateStr}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${pct}%;background:${color}"></div>
+              <div class="bar-limit" style="left:${limitPct}%"></div>
+            </div>
+            <div class="bar-amount" style="color:${color}">$${amt.toFixed(0)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Categories
+    const catMap = {};
+    personalEntries.forEach(e => { catMap[e.category] = (catMap[e.category] || 0) + e.amount; });
+    const totalCat = Object.values(catMap).reduce((s,v) => s+v, 0);
+    const catList = document.getElementById('catList');
+    if (Object.keys(catMap).length === 0) {
+      catList.innerHTML = '<div class="empty-state"><div class="empty-icon">🥧</div><div class="empty-text">Brak danych</div></div>';
+    } else {
+      catList.innerHTML = Object.entries(catMap).sort((a,b) => b[1]-a[1]).map(([cat, amt]) => {
+        const pct = totalCat > 0 ? ((amt/totalCat)*100).toFixed(0) : 0;
+        const color = CAT_COLORS[cat] || '#666';
+        return `
+          <div class="cat-row">
+            <div class="cat-dot" style="background:${color}"></div>
+            <div class="cat-name">${cat}</div>
+            <div class="cat-pct">${pct}%</div>
+            <div class="cat-amt">$${amt.toFixed(0)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // By city
+    const cityMap = {};
+    personalEntries.forEach(e => { cityMap[e.city] = (cityMap[e.city] || 0) + e.amount; });
+    const cityList = document.getElementById('cityList');
+    if (Object.keys(cityMap).length === 0) {
+      cityList.innerHTML = '<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-text">Brak danych</div></div>';
+    } else {
+      cityList.innerHTML = Object.entries(cityMap).sort((a,b) => b[1]-a[1]).map(([city, amt]) => `
+        <div class="city-row">
+          <div class="city-name">${city}</div>
+          <div class="city-amt">$${amt.toFixed(0)}</div>
+        </div>
+      `).join('');
+    }
+
+    // Transport breakdown
+    const transMap = {};
+    transportEntries.forEach(e => { transMap[e.category] = (transMap[e.category] || 0) + e.amount; });
+    const transList = document.getElementById('transportList');
+    if (Object.keys(transMap).length === 0) {
+      transList.innerHTML = '<div class="empty-state"><div class="empty-icon">⛽</div><div class="empty-text">Brak danych transportowych</div></div>';
+    } else {
+      const totalTrans = Object.values(transMap).reduce((s,v) => s+v, 0);
+      transList.innerHTML = Object.entries(transMap).sort((a,b) => b[1]-a[1]).map(([cat, amt]) => {
+        const pct = totalTrans > 0 ? ((amt/totalTrans)*100).toFixed(0) : 0;
+        const color = TRANSPORT_COLORS[cat] || '#666';
+        return `
+          <div class="cat-row">
+            <div class="cat-dot" style="background:${color}"></div>
+            <div class="cat-name">${cat}</div>
+            <div class="cat-pct">${pct}%</div>
+            <div class="cat-amt">$${amt.toFixed(0)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  updateDashboard();
+</script>
+</body>
+</html>
